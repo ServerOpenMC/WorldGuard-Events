@@ -28,15 +28,21 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup JDK
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v2
         with:
+          distribution: 'adopt'
           java-version: '21'
-          distribution: 'temurin'
-          cache: maven
-      - name: Build
+      - name: Build with Gradle
         run: |
-          mvn -B package --file pom.xml
+          chmod 777 gradlew
+          ./gradlew clean jar javadocJar sourcesJar
           git_hash=$(git rev-parse --short "$GITHUB_SHA")
           echo "git_hash=$git_hash" >> $GITHUB_ENV
           echo "snapshotVersion=5.5-SNAPSHOT" >> $GITHUB_ENV
           echo "artifactPath=$(pwd)/builds" >> $GITHUB_ENV
+      - name: Publishing to Maven Repository
+        run: |
+          ./gradlew publish
+        env:
+          MAVEN_USERNAME: ${{ secrets.MAVEN_NAME }}
+          MAVEN_PASSWORD: ${{ secrets.MAVEN_SECRET }}

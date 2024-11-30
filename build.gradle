@@ -1,0 +1,50 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenLocal()
+    maven { url = uri('https://hub.spigotmc.org/nexus/content/repositories/snapshots/') }
+    maven { url = uri('https://maven.enginehub.org/repo/') }
+    maven { url = uri('https://repo.maven.apache.org/maven2/') }
+}
+
+dependencies {
+    api libs.org.jetbrains.annotations
+    compileOnly libs.com.sk89q.worldedit.worldedit.bukkit
+    compileOnly libs.com.sk89q.worldguard.worldguard.core
+    compileOnly libs.org.spigotmc.spigot.api
+}
+
+group = 'net.raidstone'
+version = '1.18.1'
+description = 'WorldGuard Events'
+java.sourceCompatibility = JavaVersion.VERSION_21
+
+java {
+    withSourcesJar()
+    withJavadocJar()
+}
+
+publishing {
+    repositories {
+        maven {
+            url = uri('https://mvn.mathiasd.fr/releases')
+            credentials {
+                username = System.getenv("MAVEN_USERNAME") ?: project.findProperty("MAVEN_USERNAME")
+                password = System.getenv("MAVEN_PASSWORD") ?: project.findProperty("MAVEN_PASSWORD")
+            }
+        }
+    }
+
+    publications {
+        mavenJar(MavenPublication) {
+            from components.java
+
+            artifactId = "wgevents"
+            groupId = group
+            version = version
+        }
+    }
+}

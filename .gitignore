@@ -8,3 +8,5 @@ out/
 out/*
 .idea_modules/
 .idea_modules/*
+.gradle/
+build/
